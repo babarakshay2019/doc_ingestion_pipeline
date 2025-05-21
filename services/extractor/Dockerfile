@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     poppler-utils \
@@ -11,9 +12,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY . /app
+COPY services/extractor /app
+COPY shared /app/shared
 
 RUN pip install --upgrade pip
-RUN pip install textract beautifulsoup4 requests google-cloud-pubsub google-cloud-storage
+RUN pip install textract beautifulsoup4 requests google-cloud-pubsub google-cloud-storage PyMuPDF python-dotenv
 
+ENV PYTHONPATH="${PYTHONPATH}:/app:/app/shared"
 CMD ["python", "main.py"]

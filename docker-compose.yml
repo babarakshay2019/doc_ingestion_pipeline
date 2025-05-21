@@ -1,0 +1,27 @@
+services:
+  ingestion_api:
+    build: ./services/ingestion_api
+    ports:
+      - "8000:8000"
+    environment:
+      GCP_PROJECT: "ingestion-pipeline-460412"
+      GCS_BUCKET: "test-ingestion-request-bucket"
+      PUBSUB_TOPIC: ingestion-request
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
+    volumes:
+      - ./services/ingestion_api:/app
+      - ./ingestion-pipeline-460412-9d5a905d005b.json:/app/credentials.json
+
+  extractor:
+    build:
+      context: .
+      dockerfile: services/extractor/Dockerfile
+    environment:
+      GCP_PROJECT: ingestion-pipeline-460412
+      GCS_BUCKET: test-ingestion-request-bucket
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
+      PYTHONPATH: /app:/app/shared
+    volumes:
+      - ./ingestion-pipeline-460412-9d5a905d005b.json:/app/credentials.json
+    depends_on:
+      - ingestion_api
