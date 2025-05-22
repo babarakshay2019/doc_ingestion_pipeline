@@ -23,16 +23,29 @@ def subscribe_to_topic(
 
     def wrapped_callback(message: Message):
         try:
+            raw_data = message.data.decode("utf-8", errors="replace")
+
             if raw_message:
                 print("Received raw message")
                 callback(message)
             else:
-                payload = json.loads(message.data.decode("utf-8"))
-                print(f"Received message: {payload}")
-                callback(payload)
+                if not raw_data.strip():
+                    print("Warning: Received empty message body.")
+                    message.ack()
+                    return
+
+                try:
+                    payload = json.loads(raw_data)
+                    print(f"Received message: {payload}")
+                    callback(payload)
+                except json.JSONDecodeError as je:
+                    print(f"JSON decode error: {je} | Raw data: {repr(raw_data)}")
+                    message.ack()  
+                    return
+
             message.ack()
         except Exception as e:
-            print(f"Error processing message: {e}")
+            print(f"Unhandled error processing message: {e}")
             traceback.print_exc()
             message.nack()
 
@@ -54,5 +67,5 @@ def subscribe_to_topic(
     try:
         streaming_pull_future.result()  # Blocking call
     except Exception as e:
-        print(f"Listening stopped: {e}")
+        print(f"Listening stopped due to error: {e}")
         traceback.print_exc()

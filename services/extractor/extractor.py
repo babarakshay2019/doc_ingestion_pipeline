@@ -11,8 +11,18 @@ from shared.pubsub.publisher import publish_event
 OUTPUT_TOPIC = "ingestion-request"
 GCS_BUCKET = os.getenv("GCS_BUCKET")
 
+# Configure logging: timestamp, level, message
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+logger = logging.getLogger(__name__)
+
 
 def extract_text_from_url(url: str) -> str:
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url  # default to https
+
     response = requests.get(url, timeout=10)
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -37,7 +47,7 @@ def extract_text_from_pdf(gcs_path: str) -> str:
 
 def handle_ingestion_event(message_dict: dict):
     try:
-        print("Received message:", message_dict)
+        logger.info("Received message: %s", message_dict)
         msg_type = message_dict.get("type")
 
         if msg_type == "url":
@@ -46,12 +56,12 @@ def handle_ingestion_event(message_dict: dict):
             url = message_dict.get("url")
 
             if not all([tenant_id, url_id, url]):
-                print("[ERROR] Missing required fields in URL message:", message_dict)
+                logger.error("Missing required fields in URL message: %s", message_dict)
                 return
 
-            print(f"[URL MODE] Processing URL: {url} for tenant {tenant_id} with ID {url_id}")
+            logger.info("Processing URL: %s for tenant %s with ID %s", url, tenant_id, url_id)
             text = extract_text_from_url(url)
-            print(f"[INFO] Extracted text (first 100 chars): {text[:100]}")
+            logger.info("Extracted text (first 100 chars): %s", text[:100])
 
             publish_event(
                 OUTPUT_TOPIC,
@@ -62,27 +72,27 @@ def handle_ingestion_event(message_dict: dict):
                     "filename": url,  # Using URL as identifier
                 }
             )
-            print("[INFO] URL extraction completed and event published.")
+            logger.info("URL extraction completed and event published.")
             return
 
         elif msg_type == "file":
-            print("[FILE MODE] Processing file upload")
+            logger.info("Processing file upload")
             tenant_id = message_dict.get("tenant_id")
             file_id = message_dict.get("file_id")
             gcs_path = message_dict.get("gcs_path")
 
             if not all([tenant_id, file_id, gcs_path]):
-                print("[ERROR] Missing required fields in file message:", message_dict)
+                logger.error("Missing required fields in file message: %s", message_dict)
                 return
 
             bucket = GCS_BUCKET or "your-bucket-name"
             file_path = gcs_path
             document_id = file_id
 
-            print(f"[INFO] Processing file {file_path} from bucket {bucket} (document {document_id})")
+            logger.info("Processing file %s from bucket %s (document %s)", file_path, bucket, document_id)
 
             text = extract_text_from_pdf(file_path)
-            print(f"[INFO] Extracted text (first 100 chars): {text[:100]}")
+            logger.info("Extracted text (first 100 chars): %s", text[:100])
 
             publish_event(
                 OUTPUT_TOPIC,
@@ -93,10 +103,10 @@ def handle_ingestion_event(message_dict: dict):
                     "filename": message_dict.get("filename"),
                 }
             )
-            print("[INFO] File extraction completed and event published.")
+            logger.info("File extraction completed and event published.")
             return
 
-        print("[INFO] Unknown message type, skipping.")
+        logger.info("Unknown message type, skipping.")
 
     except Exception as e:
-        print(f"[ERROR] Extraction failed: {e}")
+        logger.error("Extraction failed: %s", e, exc_info=True)
