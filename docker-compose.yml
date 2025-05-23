@@ -10,7 +10,7 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
     volumes:
       - ./services/ingestion_api:/app
-      - ./ingestion-pipeline-460412-9d5a905d005b.json:/app/credentials.json
+      - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
 
   extractor:
     build:
@@ -22,6 +22,6 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
       PYTHONPATH: /app:/app/shared
     volumes:
-      - ./ingestion-pipeline-460412-9d5a905d005b.json:/app/credentials.json
+      - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
     depends_on:
       - ingestion_api
