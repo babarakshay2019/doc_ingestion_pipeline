@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   ingestion_api:
     build: ./services/ingestion_api
@@ -8,9 +10,11 @@ services:
       GCS_BUCKET: "test-ingestion-request-bucket"
       PUBSUB_TOPIC: ingestion-request
       GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
+      PYTHONPATH: /app
     volumes:
-      - ./services/ingestion_api:/app
+      - .:/app
       - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
+    working_dir: /app/services/ingestion_api
 
   extractor:
     build:
@@ -20,8 +24,10 @@ services:
       GCP_PROJECT: ingestion-pipeline-460412
       GCS_BUCKET: test-ingestion-request-bucket
       GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
-      PYTHONPATH: /app:/app/shared
+      PYTHONPATH: /app
     volumes:
+      - .:/app
       - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
+    working_dir: /app/services/extractor
     depends_on:
       - ingestion_api
