@@ -4,11 +4,12 @@ from config import GCS_BUCKET, PUBSUB_TOPIC, GCP_PROJECT
 import json
 import aiofiles
 
+
 async def save_file_to_gcs(file, tenant_id, file_id):
     path = f"{tenant_id}/{file_id}_{file.filename}"
     local_path = f"/tmp/{file_id}_{file.filename}"
 
-    async with aiofiles.open(local_path, 'wb') as out_file:
+    async with aiofiles.open(local_path, "wb") as out_file:
         content = await file.read()
         await out_file.write(content)
 
@@ -19,12 +20,11 @@ async def save_file_to_gcs(file, tenant_id, file_id):
 
     return path
 
+
 async def publish_ingestion_event(payload: dict):
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(GCP_PROJECT, PUBSUB_TOPIC)
     future = publisher.publish(
-        topic_path,
-        data=json.dumps(payload).encode("utf-8"),
-        **{"content-type": "application/json"}
+        topic_path, data=json.dumps(payload).encode("utf-8"), **{"content-type": "application/json"}
     )
     return future.result()

@@ -1,7 +1,6 @@
 import logging
 import sys
 import signal
-import os
 from dotenv import load_dotenv
 from config import PUBSUB_TOPIC, SUBSCRIPTION_NAME
 from shared.pubsub.subscriber import subscribe_to_topic
@@ -13,22 +12,25 @@ load_dotenv()
 # Configure structured logging
 logging.basicConfig(
     level=logging.INFO,
-    format='[%(levelname)s] %(asctime)s - %(name)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
+    format="[%(levelname)s] %(asctime)s - %(name)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
 logger = logging.getLogger(__name__)
 
 # Graceful shutdown handler
+
+
 def shutdown_handler(signum, frame):
     logger.info("Shutdown signal received. Exiting gracefully...")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     # Register termination signals
     signal.signal(signal.SIGINT, shutdown_handler)
     signal.signal(signal.SIGTERM, shutdown_handler)
 
-    logger.info(f"Starting extractor service...")
+    logger.info("Starting extractor service...")
     logger.info(f"Subscribing to topic '{PUBSUB_TOPIC}' with subscription '{SUBSCRIPTION_NAME}'")
 
     # Begin subscription loop
@@ -36,5 +38,5 @@ if __name__ == "__main__":
         topic=PUBSUB_TOPIC,
         subscription=SUBSCRIPTION_NAME,
         callback=handle_ingestion_event,
-        raw_message=False
+        raw_message=False,
     )

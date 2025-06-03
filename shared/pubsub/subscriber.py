@@ -8,15 +8,15 @@ from google.cloud.pubsub_v1.subscriber.message import Message
 from config import GCP_PROJECT
 
 
-
 if not GCP_PROJECT:
     raise ValueError("GCP_PROJECT environment variable is not set.")
+
 
 def subscribe_to_topic(
     topic: str,
     subscription: str,
     callback: Callable[[Union[dict, Message]], None],
-    raw_message: bool = False
+    raw_message: bool = False,
 ):
     subscriber = pubsub_v1.SubscriberClient()
     sub_path = subscriber.subscription_path(GCP_PROJECT, subscription)
@@ -40,7 +40,7 @@ def subscribe_to_topic(
                     callback(payload)
                 except json.JSONDecodeError as je:
                     print(f"JSON decode error: {je} | Raw data: {repr(raw_data)}")
-                    message.ack()  
+                    message.ack()
                     return
 
             message.ack()

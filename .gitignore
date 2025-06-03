@@ -48,3 +48,4 @@ pytest_cache/
 
 # Ignore large provider binaries (avoid Terraform plugins being committed)
 terraform/.terraform/
+.venv

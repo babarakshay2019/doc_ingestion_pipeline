@@ -1,5 +1,4 @@
 from google.cloud import pubsub_v1
-import os
 import json
 from config import GCP_PROJECT
 
@@ -9,4 +8,3 @@ def publish_event(topic: str, payload: dict):
     topic_path = publisher.topic_path(GCP_PROJECT, topic)
     future = publisher.publish(topic_path, data=json.dumps(payload).encode("utf-8"))
     return future.result()
-

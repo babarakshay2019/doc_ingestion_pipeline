@@ -2,12 +2,13 @@ from typing import List, Dict
 import uuid
 from config import CHUNK_SIZE, CHUNK_OVERLAP
 
+
 def chunk_text(
     text: str,
     chunk_size: int = CHUNK_SIZE,
     chunk_overlap: int = CHUNK_OVERLAP,
     tenant_id: str = "default",
-    document_id: str = "unknown"
+    document_id: str = "unknown",
 ) -> List[Dict]:
     chunks = []
     start = 0
@@ -22,7 +23,7 @@ def chunk_text(
             "chunk_text": chunk,
             "chunk_index": index,
             "start_offset": start,
-            "end_offset": end
+            "end_offset": end,
         }
         chunks.append(chunk_data)
         start += chunk_size - chunk_overlap

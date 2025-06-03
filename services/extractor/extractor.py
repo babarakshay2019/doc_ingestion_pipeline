@@ -1,4 +1,3 @@
-import os
 import tempfile
 import fitz  # PyMuPDF
 import requests
@@ -11,10 +10,7 @@ from shared.pubsub.publisher import publish_event
 
 
 # Configure logging: timestamp, level, message
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -69,7 +65,7 @@ def handle_ingestion_event(message_dict: dict):
                     "text": text,
                     "tenant_id": tenant_id,
                     "filename": url,  # Using URL as identifier
-                }
+                },
             )
             logger.info("URL extraction completed and event published.")
             return
@@ -84,11 +80,13 @@ def handle_ingestion_event(message_dict: dict):
                 logger.error("Missing required fields in file message: %s", message_dict)
                 return
 
-            bucket = GCS_BUCKET 
+            bucket = GCS_BUCKET
             file_path = gcs_path
             document_id = file_id
 
-            logger.info("Processing file %s from bucket %s (document %s)", file_path, bucket, document_id)
+            logger.info(
+                "Processing file %s from bucket %s (document %s)", file_path, bucket, document_id
+            )
 
             text = extract_text_from_pdf(file_path)
             logger.info("Extracted text (first 100 chars): %s", text[:100])
@@ -100,7 +98,7 @@ def handle_ingestion_event(message_dict: dict):
                     "text": text,
                     "tenant_id": tenant_id,
                     "filename": message_dict.get("filename"),
-                }
+                },
             )
             logger.info("File extraction completed and event published.")
             return

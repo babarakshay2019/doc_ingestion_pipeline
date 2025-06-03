@@ -1,6 +1,8 @@
 from google.cloud import pubsub_v1
 from config import GCP_PROJECT
+
 # Use GOOGLE_APPLICATION_CREDENTIALS env var for authentication
+
 
 class PubSubClient:
     def __init__(self, project_id: str, topic_id: str):
@@ -15,12 +17,13 @@ class PubSubClient:
         print(f"Published message ID: {future.result()}")
         return future.result()
 
+
 # Example usage (if run standalone)
 if __name__ == "__main__":
     import sys
 
     project = GCP_PROJECT
-    topic = "ingestion-request"  
+    topic = "ingestion-request"
     client = PubSubClient(project, topic)
 
     msg = "Test message"

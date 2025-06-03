@@ -2,6 +2,7 @@ from chunking import chunk_text
 from shared.pubsub.publisher import publish_event
 from config import CHUNK_SIZE, CHUNK_OVERLAP
 
+
 def process_text_message(payload: dict, output_topic: str):
     try:
         document_id = payload["document_id"]
@@ -15,7 +16,7 @@ def process_text_message(payload: dict, output_topic: str):
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             tenant_id=tenant_id,
-            document_id=document_id
+            document_id=document_id,
         )
 
         for chunk in chunks:
