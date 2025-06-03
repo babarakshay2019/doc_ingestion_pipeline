@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+aiofiles
+google-cloud-storage
+google-cloud-pubsub
+python-multipart
+beautifulsoup4

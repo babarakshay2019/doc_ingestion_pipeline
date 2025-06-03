@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     tesseract-ocr \
+    tesseract-ocr\
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -16,7 +17,6 @@ COPY services/extractor /app
 COPY shared /app/shared
 
 RUN pip install --upgrade pip
-RUN pip install textract beautifulsoup4 requests google-cloud-pubsub google-cloud-storage PyMuPDF python-dotenv
-
+RUN pip install -r requirements.txt
 ENV PYTHONPATH="${PYTHONPATH}:/app:/app/shared"
 CMD ["python", "main.py"]

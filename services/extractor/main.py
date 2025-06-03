@@ -1,13 +1,10 @@
 import logging
 import sys
 import signal
-from dotenv import load_dotenv
 from config import PUBSUB_TOPIC, SUBSCRIPTION_NAME
 from shared.pubsub.subscriber import subscribe_to_topic
 from extractor import handle_ingestion_event
 
-# Load .env variables (e.g., local dev or Docker secrets)
-load_dotenv()
 
 # Configure structured logging
 logging.basicConfig(

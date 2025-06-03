@@ -1,43 +1,31 @@
 import tempfile
-import fitz  # PyMuPDF
-import requests
-from bs4 import BeautifulSoup
 import logging
-from config import PUBSUB_TOPIC, GCS_BUCKET
-
+from config import PUBSUB_TOPIC
 from shared.storage.gcs_client import download_file_from_gcs
 from shared.pubsub.publisher import publish_event
+from utils.text_extractors import smart_pdf_parser, smart_url_parser
 
-
-# Configure logging: timestamp, level, message
+# Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def extract_text_from_url(url: str) -> str:
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url  # default to https
-
-    response = requests.get(url, timeout=10)
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    # Remove scripts and styles for cleaner text
-    for script in soup(["script", "style"]):
-        script.decompose()
-
-    # Return cleaned and visible text
-    return soup.get_text(separator="\n", strip=True)
-
-
 def extract_text_from_pdf(gcs_path: str) -> str:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-        download_file_from_gcs(gcs_path, tmp_file.name)
-        doc = fitz.open(tmp_file.name)
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        doc.close()
-    return text
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+            download_file_from_gcs(gcs_path, tmp_file.name)
+            return smart_pdf_parser(tmp_file.name)
+    except Exception as e:
+        logger.error("PDF extraction failed: %s", e, exc_info=True)
+        return ""
+
+
+def extract_text_from_url(url: str) -> str:
+    try:
+        return smart_url_parser(url)
+    except Exception as e:
+        logger.error("URL extraction failed: %s", e, exc_info=True)
+        return ""
 
 
 def handle_ingestion_event(message_dict: dict):
@@ -64,14 +52,12 @@ def handle_ingestion_event(message_dict: dict):
                     "document_id": url_id,
                     "text": text,
                     "tenant_id": tenant_id,
-                    "filename": url,  # Using URL as identifier
+                    "filename": url,
                 },
             )
             logger.info("URL extraction completed and event published.")
-            return
 
         elif msg_type == "file":
-            logger.info("Processing file upload")
             tenant_id = message_dict.get("tenant_id")
             file_id = message_dict.get("file_id")
             gcs_path = message_dict.get("gcs_path")
@@ -80,30 +66,23 @@ def handle_ingestion_event(message_dict: dict):
                 logger.error("Missing required fields in file message: %s", message_dict)
                 return
 
-            bucket = GCS_BUCKET
-            file_path = gcs_path
-            document_id = file_id
-
-            logger.info(
-                "Processing file %s from bucket %s (document %s)", file_path, bucket, document_id
-            )
-
-            text = extract_text_from_pdf(file_path)
+            logger.info("Processing file %s for tenant %s with ID %s", gcs_path, tenant_id, file_id)
+            text = extract_text_from_pdf(gcs_path)
             logger.info("Extracted text (first 100 chars): %s", text[:100])
 
             publish_event(
                 PUBSUB_TOPIC,
                 {
-                    "document_id": document_id,
+                    "document_id": file_id,
                     "text": text,
                     "tenant_id": tenant_id,
                     "filename": message_dict.get("filename"),
                 },
             )
             logger.info("File extraction completed and event published.")
-            return
 
-        logger.info("Unknown message type, skipping.")
+        else:
+            logger.warning("Unknown message type: %s", msg_type)
 
     except Exception as e:
         logger.error("Extraction failed: %s", e, exc_info=True)
