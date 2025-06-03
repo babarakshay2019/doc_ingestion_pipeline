@@ -1,6 +1,7 @@
-from typing import List, Dict
 import uuid
-from config import CHUNK_SIZE, CHUNK_OVERLAP
+from typing import Dict, List
+
+from config import CHUNK_OVERLAP, CHUNK_SIZE
 
 
 def chunk_text(

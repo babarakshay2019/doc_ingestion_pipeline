@@ -1,8 +1,10 @@
 # services/ingestion_api/utils.py
-from google.cloud import storage, pubsub_v1
-from config import GCS_BUCKET, PUBSUB_TOPIC, GCP_PROJECT
 import json
+
 import aiofiles
+from google.cloud import pubsub_v1, storage
+
+from config import GCP_PROJECT, GCS_BUCKET, PUBSUB_TOPIC
 
 
 async def save_file_to_gcs(file, tenant_id, file_id):

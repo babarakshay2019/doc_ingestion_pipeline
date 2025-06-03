@@ -1,5 +1,7 @@
-from google.cloud import pubsub_v1
 import json
+
+from google.cloud import pubsub_v1
+
 from config import GCP_PROJECT
 
 

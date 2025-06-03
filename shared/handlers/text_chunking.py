@@ -1,6 +1,7 @@
 from chunking import chunk_text
+
+from config import CHUNK_OVERLAP, CHUNK_SIZE
 from shared.pubsub.publisher import publish_event
-from config import CHUNK_SIZE, CHUNK_OVERLAP
 
 
 def process_text_message(payload: dict, output_topic: str):

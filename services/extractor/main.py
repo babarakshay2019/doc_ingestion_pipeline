@@ -1,10 +1,11 @@
 import logging
-import sys
 import signal
-from config import PUBSUB_TOPIC, SUBSCRIPTION_NAME
-from shared.pubsub.subscriber import subscribe_to_topic
+import sys
+
 from extractor import handle_ingestion_event
 
+from config import PUBSUB_TOPIC, SUBSCRIPTION_NAME
+from shared.pubsub.subscriber import subscribe_to_topic
 
 # Configure structured logging
 logging.basicConfig(

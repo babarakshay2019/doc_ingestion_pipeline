@@ -1,6 +1,7 @@
-from shared.pubsub.subscriber import subscribe_to_topic
-from shared.pubsub.publisher import publish_event
 from chunking import chunk_text
+
+from shared.pubsub.publisher import publish_event
+from shared.pubsub.subscriber import subscribe_to_topic
 
 
 def handle_extracted_text_message(payload):

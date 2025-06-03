@@ -3,10 +3,11 @@ import signal
 import sys
 import traceback
 from typing import Callable, Union
+
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.message import Message
-from config import GCP_PROJECT
 
+from config import GCP_PROJECT
 
 if not GCP_PROJECT:
     raise ValueError("GCP_PROJECT environment variable is not set.")

@@ -1,4 +1,5 @@
 from google.cloud import pubsub_v1
+
 from config import GCP_PROJECT
 
 # Use GOOGLE_APPLICATION_CREDENTIALS env var for authentication

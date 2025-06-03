@@ -1,8 +1,9 @@
 # services/ingestion_api/api.py
 import uuid
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
-from utils import save_file_to_gcs, publish_ingestion_event
+from utils import publish_ingestion_event, save_file_to_gcs
 
 router = APIRouter()
 

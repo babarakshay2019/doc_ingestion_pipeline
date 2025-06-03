@@ -1,6 +1,6 @@
-from pdf2image import convert_from_path
-import pytesseract
 import fitz  # PyMuPDF
+import pytesseract
+from pdf2image import convert_from_path
 
 
 def ocr_required(file_path: str) -> bool:

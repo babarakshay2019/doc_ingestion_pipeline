@@ -1,6 +1,6 @@
 # services/ingestion_api/main.py
-from fastapi import FastAPI
 from api import router
+from fastapi import FastAPI
 
 app = FastAPI(title="Ingestion API")
 

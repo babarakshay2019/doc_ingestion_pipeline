@@ -1,9 +1,11 @@
-import tempfile
 import logging
-from config import PUBSUB_TOPIC
-from shared.storage.gcs_client import download_file_from_gcs
-from shared.pubsub.publisher import publish_event
+import tempfile
+
 from utils.text_extractors import smart_pdf_parser, smart_url_parser
+
+from config import PUBSUB_TOPIC
+from shared.pubsub.publisher import publish_event
+from shared.storage.gcs_client import download_file_from_gcs
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
