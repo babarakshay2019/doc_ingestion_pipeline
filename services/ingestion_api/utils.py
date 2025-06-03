@@ -1,12 +1,8 @@
 # services/ingestion_api/utils.py
 from google.cloud import storage, pubsub_v1
-import os
+from config import GCS_BUCKET, PUBSUB_TOPIC, GCP_PROJECT
 import json
 import aiofiles
-
-GCS_BUCKET = os.getenv("GCS_BUCKET")
-PUBSUB_TOPIC = os.getenv("PUBSUB_TOPIC")
-PROJECT_ID = os.getenv("GCP_PROJECT")
 
 async def save_file_to_gcs(file, tenant_id, file_id):
     path = f"{tenant_id}/{file_id}_{file.filename}"
@@ -25,7 +21,7 @@ async def save_file_to_gcs(file, tenant_id, file_id):
 
 async def publish_ingestion_event(payload: dict):
     publisher = pubsub_v1.PublisherClient()
-    topic_path = publisher.topic_path(PROJECT_ID, PUBSUB_TOPIC)
+    topic_path = publisher.topic_path(GCP_PROJECT, PUBSUB_TOPIC)
     future = publisher.publish(
         topic_path,
         data=json.dumps(payload).encode("utf-8"),

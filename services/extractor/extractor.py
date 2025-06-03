@@ -4,12 +4,11 @@ import fitz  # PyMuPDF
 import requests
 from bs4 import BeautifulSoup
 import logging
+from config import PUBSUB_TOPIC, GCS_BUCKET
 
 from shared.storage.gcs_client import download_file_from_gcs
 from shared.pubsub.publisher import publish_event
 
-OUTPUT_TOPIC = "ingestion-request"
-GCS_BUCKET = os.getenv("GCS_BUCKET")
 
 # Configure logging: timestamp, level, message
 logging.basicConfig(
@@ -64,7 +63,7 @@ def handle_ingestion_event(message_dict: dict):
             logger.info("Extracted text (first 100 chars): %s", text[:100])
 
             publish_event(
-                OUTPUT_TOPIC,
+                PUBSUB_TOPIC,
                 {
                     "document_id": url_id,
                     "text": text,
@@ -85,7 +84,7 @@ def handle_ingestion_event(message_dict: dict):
                 logger.error("Missing required fields in file message: %s", message_dict)
                 return
 
-            bucket = GCS_BUCKET or "your-bucket-name"
+            bucket = GCS_BUCKET 
             file_path = gcs_path
             document_id = file_id
 
@@ -95,7 +94,7 @@ def handle_ingestion_event(message_dict: dict):
             logger.info("Extracted text (first 100 chars): %s", text[:100])
 
             publish_event(
-                OUTPUT_TOPIC,
+                PUBSUB_TOPIC,
                 {
                     "document_id": document_id,
                     "text": text,

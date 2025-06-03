@@ -1,6 +1,5 @@
 from google.cloud import pubsub_v1
-import os
-
+from config import GCP_PROJECT
 # Use GOOGLE_APPLICATION_CREDENTIALS env var for authentication
 
 class PubSubClient:
@@ -20,7 +19,7 @@ class PubSubClient:
 if __name__ == "__main__":
     import sys
 
-    project = os.getenv("GCP_PROJECT")
+    project = GCP_PROJECT
     topic = "ingestion-request"  
     client = PubSubClient(project, topic)
 

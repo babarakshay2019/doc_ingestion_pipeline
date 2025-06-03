@@ -3,7 +3,7 @@ import sys
 import signal
 import os
 from dotenv import load_dotenv
-
+from config import PUBSUB_TOPIC, SUBSCRIPTION_NAME
 from shared.pubsub.subscriber import subscribe_to_topic
 from extractor import handle_ingestion_event
 
@@ -28,17 +28,13 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, shutdown_handler)
     signal.signal(signal.SIGTERM, shutdown_handler)
 
-    # Load from environment or fall back to defaults
-    topic = os.getenv("PUBSUB_TOPIC", "ingestion-request")
-    subscription = os.getenv("SUBSCRIPTION_NAME", "extractor-sub")
-
     logger.info(f"Starting extractor service...")
-    logger.info(f"Subscribing to topic '{topic}' with subscription '{subscription}'")
+    logger.info(f"Subscribing to topic '{PUBSUB_TOPIC}' with subscription '{SUBSCRIPTION_NAME}'")
 
     # Begin subscription loop
     subscribe_to_topic(
-        topic=topic,
-        subscription=subscription,
+        topic=PUBSUB_TOPIC,
+        subscription=SUBSCRIPTION_NAME,
         callback=handle_ingestion_event,
         raw_message=False
     )

@@ -1,10 +1,11 @@
 from typing import List, Dict
 import uuid
+from config import CHUNK_SIZE, CHUNK_OVERLAP
 
 def chunk_text(
     text: str,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 200,
+    chunk_size: int = CHUNK_SIZE,
+    chunk_overlap: int = CHUNK_OVERLAP,
     tenant_id: str = "default",
     document_id: str = "unknown"
 ) -> List[Dict]:

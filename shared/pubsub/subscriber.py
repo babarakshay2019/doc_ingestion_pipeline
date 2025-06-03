@@ -1,15 +1,15 @@
 import json
-import os
 import signal
 import sys
 import traceback
 from typing import Callable, Union
 from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.message import Message
+from config import GCP_PROJECT
 
-PROJECT_ID = os.getenv("GCP_PROJECT")
 
-if not PROJECT_ID:
+
+if not GCP_PROJECT:
     raise ValueError("GCP_PROJECT environment variable is not set.")
 
 def subscribe_to_topic(
@@ -19,7 +19,7 @@ def subscribe_to_topic(
     raw_message: bool = False
 ):
     subscriber = pubsub_v1.SubscriberClient()
-    sub_path = subscriber.subscription_path(PROJECT_ID, subscription)
+    sub_path = subscriber.subscription_path(GCP_PROJECT, subscription)
 
     def wrapped_callback(message: Message):
         try:
