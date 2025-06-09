@@ -9,7 +9,7 @@ CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", 3))
 GOOGLE_APPLICATION_CREDENTIALS = os.getenv(
-    "GOOGLE_APPLICATION_CREDENTIALS", "ingestion-pipeline-460412-f3ad534db6e9.json"
+    "GOOGLE_APPLICATION_CREDENTIALS", "ingestion-pipeline-460412-a183aa8f40bb.json"
 )
 GCP_PROJECT = os.getenv("GCP_PROJECT", "ingestion-pipeline-460412")
 GCS_BUCKET = os.getenv("GCS_BUCKET", "ingestion-pipeline-bucket")

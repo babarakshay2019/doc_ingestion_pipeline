@@ -13,7 +13,7 @@ services:
       PYTHONPATH: /app
     volumes:
       - .:/app
-      - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
+      - ./ingestion-pipeline-460412-a183aa8f40bb.json:/app/credentials.json
     working_dir: /app/services/ingestion_api
 
   extractor:
@@ -27,7 +27,7 @@ services:
       PYTHONPATH: /app
     volumes:
       - .:/app
-      - ./ingestion-pipeline-460412-f3ad534db6e9.json:/app/credentials.json
+      - ./ingestion-pipeline-460412-a183aa8f40bb.json:/app/credentials.json
     working_dir: /app/services/extractor
     depends_on:
       - ingestion_api
