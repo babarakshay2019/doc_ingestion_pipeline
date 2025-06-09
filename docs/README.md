@@ -171,7 +171,7 @@ We evaluate quality and cost trade-offs between tools like:
 - `PyMuPDF`, `pdfplumber`, `Tesseract`, `Playwright`, `unstructured`
 - Alternatives: AWS Textract, GROBID
 
-Refer to [`docs/PARSING_STRATEGY.md`](docs/PARSING_STRATEGY.md) for full details.
+Refer to [`/PARSING_STRATEGY.md`](/PARSING_STRATEGY.md) for full details.
 
 ---
 
