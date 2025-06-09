@@ -148,19 +148,48 @@ Services started:
 
 ## API Endpoints
 
-Visit Swagger UI at: [http://localhost:8000/docs](http://localhost:8000/docs)
+Visit Swagger UI at: [http://http://3.110.165.65:8000/docs](http://http://3.110.165.65:8000/docs)
 
-### Upload File
+### Upload File (Direct Extraction)
 
-```bash
-curl -X POST http://localhost:8000/api/upload   -F "tenant_id=tenant123"   -F "file=@/path/to/document.pdf"
-```
-
-### Submit URL
+Extract text directly from an uploaded file via the ingestion API.
 
 ```bash
-curl -X POST http://localhost:8000/api/url   -H "Content-Type: application/x-www-form-urlencoded"   -d "tenant_id=tenant123&url=https://example.com"
+curl -X POST http://http://3.110.165.65:8000/api/extract/direct-file \
+  -F "tenant_id=tenant123" \
+  -F "file=@/path/to/document.pdf"
 ```
+
+- **Request**: multipart/form-data
+- **Parameters**:
+  - `tenant_id`: Tenant identifier (string)
+  - `file`: PDF file upload
+- **Response**:
+  - JSON containing extracted text:
+  ```json
+  {
+    "extracted_text": "..."
+  }
+  ```
+
+---
+
+### Submit URL for Ingestion
+
+Submit a URL to be ingested and processed asynchronously via Pub/Sub.
+
+```bash
+curl -X POST http://http://3.110.165.65:8000/api/url \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "tenant_id=tenant123&url=https://example.com"
+```
+
+- **Request**: application/x-www-form-urlencoded
+- **Parameters**:
+  - `tenant_id`: Tenant identifier (string)
+  - `url`: URL to be ingested
+- **Response**:
+  - JSON acknowledgment with ingestion status.
 
 ---
 

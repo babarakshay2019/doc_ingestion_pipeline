@@ -1,9 +1,9 @@
 import logging
 import tempfile
 
-from utils.text_extractors import smart_pdf_parser, smart_url_parser
-
 from config import PUBSUB_TOPIC
+from services.extractor.utils.text_extractors import (smart_pdf_parser,
+                                                      smart_url_parser)
 from shared.pubsub.publisher import publish_event
 from shared.storage.gcs_client import download_file_from_gcs
 
@@ -12,11 +12,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def extract_text_from_pdf(gcs_path: str) -> str:
+def extract_text_from_pdf(path: str, from_gcs: bool = True) -> str:
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-            download_file_from_gcs(gcs_path, tmp_file.name)
-            return smart_pdf_parser(tmp_file.name)
+        if from_gcs:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                download_file_from_gcs(path, tmp_file.name)
+                return smart_pdf_parser(tmp_file.name)
+        else:
+            return smart_pdf_parser(path)
     except Exception as e:
         logger.error("PDF extraction failed: %s", e, exc_info=True)
         return ""
