@@ -148,7 +148,7 @@ Services started:
 
 ## API Endpoints
 
-Visit Swagger UI at: [http://3.110.165.65:8000/docs](http://http://3.110.165.65:8000/docs)
+Visit Swagger UI at: [http://3.110.165.65:8000/docs](http://3.110.165.65:8000/docs)
 
 ### Upload File (Direct Extraction)
 
