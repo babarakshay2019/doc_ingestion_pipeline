@@ -10,7 +10,29 @@ from google.cloud.pubsub_v1.subscriber.message import Message
 
 from config import GCP_PROJECT
 
-# Structured logging
+
+# === Helper to make any object JSON serializable ===
+def to_serializable(obj):
+    if isinstance(obj, dict):
+        return {k: to_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [to_serializable(v) for v in obj]
+    elif hasattr(obj, "__dict__"):
+        return to_serializable(vars(obj))
+    elif hasattr(obj, "items"):
+        try:
+            return dict(obj.items())
+        except Exception:
+            return str(obj)
+    else:
+        try:
+            json.dumps(obj)  # will pass if it's serializable
+            return obj
+        except Exception:
+            return str(obj)
+
+
+# === Structured Logging Config ===
 logger = logging.getLogger("pubsub_subscriber")
 logging.basicConfig(
     level=logging.INFO,
@@ -29,6 +51,7 @@ if not GCP_PROJECT:
     raise ValueError("GCP_PROJECT environment variable is not set.")
 
 
+# === Main Subscriber Function ===
 def subscribe_to_topic(
     topic: str,
     subscription: str,
@@ -45,7 +68,9 @@ def subscribe_to_topic(
 
             if not raw_data.strip():
                 logger.warning(
-                    json.dumps({"event": "EmptyMessageReceived", "attributes": attributes})
+                    json.dumps(
+                        {"event": "EmptyMessageReceived", "attributes": to_serializable(attributes)}
+                    )
                 )
                 message.ack()
                 return
@@ -56,7 +81,7 @@ def subscribe_to_topic(
                     json.dumps(
                         {
                             "event": "MessageReceived",
-                            "attributes": attributes,
+                            "attributes": to_serializable(attributes),
                             "payload_preview": str(payload)[:200],
                         }
                     )
