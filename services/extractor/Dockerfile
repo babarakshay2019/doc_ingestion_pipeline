@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxslt-dev \
     tesseract-ocr \
-    tesseract-ocr\
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
