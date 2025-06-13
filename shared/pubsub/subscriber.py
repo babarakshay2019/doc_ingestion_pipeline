@@ -1,4 +1,5 @@
 import json
+import logging
 import signal
 import sys
 import traceback
@@ -8,6 +9,14 @@ from google.cloud import pubsub_v1
 from google.cloud.pubsub_v1.subscriber.message import Message
 
 from config import GCP_PROJECT
+
+# Configure logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
 
 if not GCP_PROJECT:
     raise ValueError("GCP_PROJECT environment variable is not set.")
@@ -46,15 +55,15 @@ def subscribe_to_topic(
 
             message.ack()
         except Exception as e:
-            print(f"Unhandled error processing message: {e}")
+            logger.error(f"Unhandled error processing message: {e}")
             traceback.print_exc()
             message.nack()
 
-    print(f"Listening on {sub_path} ...")
+    logger.info(f"Listening on {sub_path} ...")
     streaming_pull_future = subscriber.subscribe(sub_path, callback=wrapped_callback)
 
     def shutdown_handler(signum, frame):
-        print("Shutdown signal received. Cancelling subscription...")
+        logger.info("Shutdown signal received. Cancelling subscription...")
         streaming_pull_future.cancel()
         try:
             streaming_pull_future.result(timeout=5)
@@ -68,5 +77,5 @@ def subscribe_to_topic(
     try:
         streaming_pull_future.result()  # Blocking call
     except Exception as e:
-        print(f"Listening stopped due to error: {e}")
+        logger.error(f"Listening stopped due to error: {e}")
         traceback.print_exc()

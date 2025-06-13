@@ -18,3 +18,4 @@ SUBSCRIPTION_NAME = os.getenv("SUBSCRIPTION_NAME", "extractor-sub")
 PUBSUB_EXTRACTION_TOPIC = os.getenv("PUBSUB_EXTRACTION_TOPIC", "extraction-topic")
 PUBSUB_EMBEDDING_TOPIC = os.getenv("PUBSUB_EMBEDDING_TOPIC", "embedding-topic")
 CHUNKER_SUBSCRIPTION = os.getenv("CHUNKER_SUBSCRIPTION", "chunker-sub")
+EXTRACTED_TEXT_BUCKET = "ingestion-extracted-text"

@@ -6,6 +6,7 @@ from config import GCP_PROJECT
 
 
 def publish_event(topic: str, payload: dict):
+    print(f"[DEBUG] Publishing message to {topic}: {payload}")
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(GCP_PROJECT, topic)
     future = publisher.publish(topic_path, data=json.dumps(payload).encode("utf-8"))

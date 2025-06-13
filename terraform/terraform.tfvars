@@ -1,5 +1,6 @@
 credentials_file = "../ingestion-pipeline-460412-a183aa8f40bb.json"
 project_id       = "ingestion-pipeline-460412"
 bucket_name      = "test-ingestion-request-bucket"
+Extraction_bucket = "ingestion-extracted-text"
 topic_name       = "ingestion-request"
 subscription_name = "extractor-sub"
