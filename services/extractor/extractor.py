@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger(__name__)
 
 
-def extract_text_from_pdf(path: str, from_gcs: bool = True) -> str:
+def extract_text_from_pdf(path: str, from_gcs: bool = True) -> list:
     try:
         if from_gcs:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
@@ -23,15 +23,15 @@ def extract_text_from_pdf(path: str, from_gcs: bool = True) -> str:
             return smart_pdf_parser(path)
     except Exception as e:
         logger.error("PDF extraction failed: %s", e, exc_info=True)
-        return ""
+        return [{"type": "error", "text": f"PDF extraction failed: {str(e)}"}]
 
 
-def extract_text_from_url(url: str) -> str:
+def extract_text_from_url(url: str) -> dict:
     try:
         return smart_url_parser(url)
     except Exception as e:
         logger.error("URL extraction failed: %s", e, exc_info=True)
-        return ""
+        return {"error": f"URL extraction failed: {str(e)}"}
 
 
 def handle_ingestion_event(message_dict: dict):
@@ -53,8 +53,15 @@ def handle_ingestion_event(message_dict: dict):
                 return
 
             logger.info("Processing URL: %s for tenant %s with ID %s", url, tenant_id, url_id)
-            text = extract_text_from_url(url)
-            logger.info("Extracted text (first 100 chars): %s", text[:100])
+            structured_data = extract_text_from_url(url)
+            logger.info(
+                "Extracted content keys: %s",
+                (
+                    list(structured_data.keys())
+                    if isinstance(structured_data, dict)
+                    else type(structured_data)
+                ),
+            )
 
             gcs_blob_name = f"url/{url_id}.json"
             public_url = upload_extracted_text_to_gcs(
@@ -64,7 +71,7 @@ def handle_ingestion_event(message_dict: dict):
                     "document_id": url_id,
                     "source": "url",
                     "url": url,
-                    "text": text,
+                    "structured_text": structured_data,
                 },
             )
 
@@ -72,7 +79,7 @@ def handle_ingestion_event(message_dict: dict):
                 PUBSUB_TOPIC,
                 {
                     "document_id": url_id,
-                    "text": text,
+                    "structured_text": structured_data,
                     "tenant_id": tenant_id,
                     "filename": url,
                     "extracted_gcs_url": public_url,
@@ -91,8 +98,11 @@ def handle_ingestion_event(message_dict: dict):
                 return
 
             logger.info("Processing file %s for tenant %s with ID %s", gcs_path, tenant_id, file_id)
-            text = extract_text_from_pdf(gcs_path)
-            logger.info("Extracted text (first 100 chars): %s", text[:100])
+            structured_data = extract_text_from_pdf(gcs_path)
+            logger.info(
+                "Extracted %d blocks from PDF",
+                len(structured_data) if isinstance(structured_data, list) else 0,
+            )
 
             gcs_blob_name = f"file/{file_id}.json"
             public_url = upload_extracted_text_to_gcs(
@@ -102,7 +112,7 @@ def handle_ingestion_event(message_dict: dict):
                     "document_id": file_id,
                     "source": "file",
                     "gcs_path": gcs_path,
-                    "text": text,
+                    "structured_text": structured_data,
                 },
             )
 
@@ -110,7 +120,7 @@ def handle_ingestion_event(message_dict: dict):
                 PUBSUB_TOPIC,
                 {
                     "document_id": file_id,
-                    "text": text,
+                    "structured_text": structured_data,
                     "tenant_id": tenant_id,
                     "filename": message_dict.get("filename"),
                     "extracted_gcs_url": public_url,

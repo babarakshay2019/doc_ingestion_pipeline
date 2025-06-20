@@ -10,4 +10,6 @@ pdf2image
 pdfplumber
 pillow
 trafilatura
-pdf2image
+readability-lxml
+unstructured[all-docs]==0.10.2
+pdfminer.six==20221105
