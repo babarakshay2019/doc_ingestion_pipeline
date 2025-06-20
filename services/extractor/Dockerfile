@@ -4,8 +4,7 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y \
     build-essential \
     poppler-utils \
-    libreoffice \
-    libxml2-dev \
+1    libxml2-dev \
     libxslt-dev \
     tesseract-ocr \
     libsm6 libxext6 libxrender-dev \
