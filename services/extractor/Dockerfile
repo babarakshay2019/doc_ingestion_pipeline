@@ -4,7 +4,7 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y \
     build-essential \
     poppler-utils \
-1    libxml2-dev \
+    libxml2-dev \
     libxslt-dev \
     tesseract-ocr \
     libsm6 libxext6 libxrender-dev \
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     swig \
     libpulse-dev \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 WORKDIR /app
 
 COPY services/extractor /app
