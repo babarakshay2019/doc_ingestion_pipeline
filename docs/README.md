@@ -1,10 +1,10 @@
-#  Document Ingestion Pipeline
+# 📄 Document Ingestion Pipeline
 
-A **modular**, **scalable**, and **event-driven** system built in **Python** using **FastAPI**, **Docker**, and **Google Cloud Pub/Sub** to ingest and extract structured text from documents and URLs. Designed for downstream use cases like **RAG**, **semantic search**, and **LLM pre-processing**.
+A **modular**, **scalable**, and **event-driven** system built with **Python**, **FastAPI**, and **Docker**. It ingests and extracts structured text from documents and URLs, designed for downstream use cases like **RAG pipelines**, **semantic search**, and **LLM preprocessing**.
 
 ---
 
-##  Architecture Overview
+## 🏗️ Architecture Overview
 
 ```text
 [ Ingestion API ] ──> [ Pub/Sub Topic ] ──> [ Extractor Service ] ──> [ Chunker Service ]
@@ -229,5 +229,15 @@ ruff check .
 - **Google Cloud Pub/Sub**
 - **Google Cloud Storage**
 - **PyMuPDF**, **pdfplumber**, **Tesseract**, **Playwright**
+
+---
+
+##  Notes
+
+ **Deployment Constraints**: Due to memory and CPU limitations, the full ingestion pipeline **could not be deployed on a t2.micro instance (AWS Free Tier)**. Services like `Playwright`, `Tesseract`, and `unstructured` require more resources for reliable performance.
+
+- **Local Results**: The pipeline runs **smoothly and reliably in a local development environment**, producing **well-structured and high-quality outputs** from both PDF and web sources.
+
+-  **Next Step**: Consider deploying on a larger VM (e.g., `t3.medium` or higher) or containerizing and deploying to **Google Cloud Run**, **GKE**, or **AWS ECS Fargate** for scalable cloud execution.
 
 ---
